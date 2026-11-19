@@ -1,5 +1,9 @@
-import subprocess
+import requests
 import re
+import os
+
+OLLAMA_BASE_URL = os.getenv("PROMPTME_OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
+PROMPTME_SQL_MODEL = os.getenv("PROMPTME_SQL_MODEL", "sqlcoder")
 
 def generate_sql_prompt(natural_language_prompt):
     return f"""
@@ -36,24 +40,23 @@ def extract_sql_from_output(output: str) -> str:
     match = re.search(r"(SELECT|INSERT|UPDATE|DELETE)[\s\S]+?;", output, re.IGNORECASE)
     return match.group(0).strip() if match else output.strip()
 
-def query_llm(prompt: str, model="sqlcoder"):
+def query_llm(prompt: str, model=PROMPTME_SQL_MODEL):
     """
     Sends a prompt to the LLM via Ollama and extracts + sanitizes the SQL query.
     """
     print("🔥 Calling Ollama with prompt:", prompt)
 
-    result = subprocess.run(
-        ["ollama", "run", model],
-        input=prompt.encode(),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
-    )
-
-    if result.returncode != 0:
-        print("LLM ERROR:", result.stderr.decode("utf-8"))
+    try:
+        response = requests.post(
+            f"{OLLAMA_BASE_URL}/api/generate",
+            json={"model": model, "prompt": prompt, "stream": False},
+            timeout=120
+        )
+        response.raise_for_status()
+        raw_output = response.json().get("response", "").strip()
+    except Exception as e:
+        print("LLM ERROR:", str(e))
         return "LLM Error: Model not found or execution failed."
-
-    raw_output = result.stdout.decode("utf-8").strip()
 
     # Extract and sanitize SQL
     sql = extract_sql_from_output(raw_output)

@@ -1,6 +1,7 @@
 import requests
+import os
 
-OLLAMA_URL = "http://localhost:11434"
+OLLAMA_URL = os.getenv("PROMPTME_OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
 
 def generate_with_ollama(model_name, history, prompt):
     # Send the chat to Ollama's API

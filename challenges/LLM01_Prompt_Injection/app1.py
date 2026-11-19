@@ -3,10 +3,15 @@ import requests
 from bs4 import BeautifulSoup
 import uuid
 import ollama
+import os
 from markupsafe import Markup
 
 app = Flask(__name__)
 app.secret_key = 'S3cr3t' 
+OLLAMA_BASE_URL = os.getenv("PROMPTME_OLLAMA_BASE_URL", "http://localhost:11434")
+PROMPTME_MODEL = os.getenv("PROMPTME_MODEL", "mistral")
+PROMPTME_GUARDIAN_MODEL = os.getenv("PROMPTME_GUARDIAN_MODEL", "granite3-guardian")
+ollama_client = ollama.Client(host=OLLAMA_BASE_URL)
 
 # CTF secret flag
 SECRET_KEY = "d368130b3370c44860743687208a846e"
@@ -30,8 +35,8 @@ def store_message(user_id, role, content):
 
 # Main chat model call
 def call_ollama(prompt):
-    response = ollama.chat(
-        model='mistral',  # Your main chat model
+    response = ollama_client.chat(
+        model=PROMPTME_MODEL,
         messages=[{"role": "user", "content": prompt}]
     )
     return response['message']['content']
@@ -48,8 +53,8 @@ def check_malicious_input(user_input):
     )
 
     try:
-        response = ollama.chat(
-            model='granite3-guardian',
+        response = ollama_client.chat(
+            model=PROMPTME_GUARDIAN_MODEL,
             messages=[{"role": "user", "content": guardian_prompt}]
         )
         verdict_raw = response['message']['content'].strip()

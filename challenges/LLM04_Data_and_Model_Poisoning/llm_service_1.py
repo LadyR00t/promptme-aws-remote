@@ -48,7 +48,9 @@ ANSWER:
 prompt = ChatPromptTemplate.from_template(prompt_template)
 
 # Model
-model = ChatOllama(model="mistral", base_url="http://localhost:11434")
+OLLAMA_BASE_URL = os.getenv("PROMPTME_OLLAMA_BASE_URL", "http://localhost:11434")
+PROMPTME_MODEL = os.getenv("PROMPTME_MODEL", "mistral")
+model = ChatOllama(model=PROMPTME_MODEL, base_url=OLLAMA_BASE_URL)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_PATH = os.path.join(BASE_DIR, "test_docs", "owasp_llm_qa.csv")
