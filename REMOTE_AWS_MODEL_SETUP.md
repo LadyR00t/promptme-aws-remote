@@ -1,23 +1,21 @@
-# PromptMe usando modelos en AWS (sin Ollama local)
+# PromptMe con Ollama remoto autenticado (GCP)
 
-Este proyecto quedó preparado para usar un endpoint de Ollama remoto en AWS.
+Este proyecto usa la API nativa de Ollama (`/api/chat`, `/api/generate`) contra un endpoint remoto que **exige Bearer token**.
 
 ## Variables de entorno
 
-Antes de ejecutar cualquier challenge, define:
-
 ```powershell
-$env:PROMPTME_OLLAMA_BASE_URL="http://<IP_O_HOST_AWS>:11434"
+$env:PROMPTME_OLLAMA_BASE_URL="http://136.68.19.154:8080"
+$env:PROMPTME_API_KEY="<LITELLM_MASTER_KEY>"
 $env:PROMPTME_MODEL="aisecops"
 $env:PROMPTME_GUARDIAN_MODEL="aisecops"
 $env:PROMPTME_SQL_MODEL="aisecops"
 ```
 
 Notas:
-- `PROMPTME_OLLAMA_BASE_URL`: URL base de tu instancia AWS con Ollama (sin `/api/...`).
-- `PROMPTME_MODEL`: modelo principal.
-- `PROMPTME_GUARDIAN_MODEL`: challenge LLM01 usa un segundo modelo para "guardian". Si no tienes uno dedicado, usa el mismo.
-- `PROMPTME_SQL_MODEL`: challenge LLM05.
+- `PROMPTME_OLLAMA_BASE_URL`: URL pública del proxy autenticado (no el puerto crudo 11434).
+- `PROMPTME_API_KEY`: token Bearer (mismo valor que `LITELLM_MASTER_KEY`). También acepta `LITELLM_MASTER_KEY` como fallback.
+- Sin token el backend responde `401`.
 
 ## Ejecución
 
@@ -26,17 +24,10 @@ pip install -r requirements.txt
 python main.py
 ```
 
-## Si quieres alternar entre dos modelos en AWS
+## OpenAI-compatible (Euskalhack / otros clientes)
 
-Puedes cambiar solo:
+Si prefieres API tipo OpenAI:
 
-```powershell
-$env:PROMPTME_MODEL="otro-modelo"
-```
-
-y reiniciar el challenge.
-
-## Limitación importante
-
-PromptMe usa API de Ollama (`/api/chat` y `/api/generate`).  
-Para usar modelos en AWS con este proyecto sin cambios adicionales, el backend debe exponer interfaz de Ollama.
+- Base URL: `http://136.82.165.140/v1`
+- Model: `aisecops`
+- Auth: `Authorization: Bearer <LITELLM_MASTER_KEY>`

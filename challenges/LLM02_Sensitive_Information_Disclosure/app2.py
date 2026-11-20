@@ -9,8 +9,8 @@ from langchain_community.vectorstores import FAISS
 
 # NEW non-deprecated imports
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_ollama import OllamaLLM
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from promptme_auth import make_ollama_llm
 
 
 # Flask app
@@ -80,9 +80,8 @@ vectorstore = FAISS.from_documents(
 # Initialize Ollama LLM
 # -------------------------
 
-llm = OllamaLLM(
-    model="mistral",
-    base_url="http://127.0.0.1:11434",
+llm = make_ollama_llm(
+    model=os.getenv("PROMPTME_MODEL", "mistral"),
     temperature=0
 )
 

@@ -1,8 +1,9 @@
 import requests
 import re
 import os
+from promptme_auth import ollama_base_url, ollama_headers
 
-OLLAMA_BASE_URL = os.getenv("PROMPTME_OLLAMA_BASE_URL", "http://localhost:11434").rstrip("/")
+OLLAMA_BASE_URL = ollama_base_url()
 PROMPTME_SQL_MODEL = os.getenv("PROMPTME_SQL_MODEL", "sqlcoder")
 
 def generate_sql_prompt(natural_language_prompt):
@@ -49,6 +50,7 @@ def query_llm(prompt: str, model=PROMPTME_SQL_MODEL):
     try:
         response = requests.post(
             f"{OLLAMA_BASE_URL}/api/generate",
+            headers=ollama_headers(),
             json={"model": model, "prompt": prompt, "stream": False},
             timeout=120
         )

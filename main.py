@@ -20,12 +20,18 @@ def start_challenge(port, app_path):
     os.makedirs("logs", exist_ok=True)
 
     # Start the challenge and log stdout/stderr
+    env = os.environ.copy()
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    challenges_dir = os.path.join(root_dir, "challenges")
+    env["PYTHONPATH"] = challenges_dir + os.pathsep + env.get("PYTHONPATH", "")
     with open(log_file, "w") as log:
         process = subprocess.Popen(
             [sys.executable, app_path],  # <-- uses the current interpreter
             stdout=log,
             stderr=log,
-            close_fds=True
+            close_fds=True,
+            cwd=root_dir,
+            env=env,
         )
     
     running_apps[port] = process

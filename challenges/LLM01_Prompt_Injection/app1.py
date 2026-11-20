@@ -2,16 +2,16 @@ from flask import Flask, render_template, request, session, redirect, url_for, f
 import requests
 from bs4 import BeautifulSoup
 import uuid
-import ollama
 import os
 from markupsafe import Markup
+from promptme_auth import make_ollama_client, ollama_base_url
 
 app = Flask(__name__)
 app.secret_key = 'S3cr3t' 
-OLLAMA_BASE_URL = os.getenv("PROMPTME_OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_BASE_URL = ollama_base_url()
 PROMPTME_MODEL = os.getenv("PROMPTME_MODEL", "mistral")
 PROMPTME_GUARDIAN_MODEL = os.getenv("PROMPTME_GUARDIAN_MODEL", "granite3-guardian")
-ollama_client = ollama.Client(host=OLLAMA_BASE_URL)
+ollama_client = make_ollama_client(OLLAMA_BASE_URL)
 
 # CTF secret flag
 SECRET_KEY = "d368130b3370c44860743687208a846e"

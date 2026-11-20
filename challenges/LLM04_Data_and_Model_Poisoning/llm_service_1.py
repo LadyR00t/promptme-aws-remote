@@ -6,10 +6,10 @@ from io import StringIO
 from datetime import datetime, timezone
 
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama import ChatOllama
 from langchain.schema import AIMessage
 from sentence_transformers import SentenceTransformer, util
 import torch
+from promptme_auth import make_chat_ollama, ollama_base_url
 
 qa_knowledge = []
 csv_questions = []
@@ -48,9 +48,9 @@ ANSWER:
 prompt = ChatPromptTemplate.from_template(prompt_template)
 
 # Model
-OLLAMA_BASE_URL = os.getenv("PROMPTME_OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_BASE_URL = ollama_base_url()
 PROMPTME_MODEL = os.getenv("PROMPTME_MODEL", "mistral")
-model = ChatOllama(model=PROMPTME_MODEL, base_url=OLLAMA_BASE_URL)
+model = make_chat_ollama(model=PROMPTME_MODEL, base_url=OLLAMA_BASE_URL)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_PATH = os.path.join(BASE_DIR, "test_docs", "owasp_llm_qa.csv")

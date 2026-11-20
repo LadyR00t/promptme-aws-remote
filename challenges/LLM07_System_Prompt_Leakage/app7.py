@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request
-from langchain_ollama import ChatOllama
 import os
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import (
@@ -7,11 +6,12 @@ from langchain_core.prompts import (
     HumanMessagePromptTemplate, 
     ChatPromptTemplate
 )
+from promptme_auth import make_chat_ollama, ollama_base_url
 
 app = Flask(__name__)
-OLLAMA_BASE_URL = os.getenv("PROMPTME_OLLAMA_BASE_URL", "http://localhost:11434/")
+OLLAMA_BASE_URL = ollama_base_url()
 PROMPTME_MODEL = os.getenv("PROMPTME_MODEL", "mistral")
-model = ChatOllama(model=PROMPTME_MODEL, base_url=OLLAMA_BASE_URL)
+model = make_chat_ollama(model=PROMPTME_MODEL, base_url=OLLAMA_BASE_URL)
 
 # System prompt with hidden API key
 system_prompt = """You are a helpful and ethical AI assistant. 
