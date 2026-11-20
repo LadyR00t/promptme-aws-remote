@@ -1,111 +1,123 @@
-# PromptMe - A Vulnerable LLM Application
+# PromptMe - A Vulnerable LLM Application (remote-ready)
 
 <p>
 <img src="https://github.com/OWASP/www-project-promptme/blob/main/static/logo.png?raw=true" width="600" alt="Thumbnail"/>
 </p>
 
-### A vulnerable application designed to demonstrate the OWASP Top 10 for Large Language Model (LLM) Applications.
+Vulnerable LLM lab based on OWASP Top 10 for LLM Applications (10 CTF-style challenges).
 
-PromptMe is an educational project that showcases security vulnerabilities in large language models (LLMs) and their web integrations. It includes 10 hands-on challenges inspired by the OWASP LLM Top 10, demonstrating how these vulnerabilities can be discovered and exploited in real-world scenarios.
+This fork is prepared to run against a **shared remote Ollama endpoint** (with Bearer auth). You do **not** need to install Ollama or download models on your laptop.
 
-This project is intended for AI Security professionals to explore potential security risks in LLMs and learn effective mitigation strategies.
-
-## Overview (No API Key required)
-
-The project is primarily developed using Python and the Ollama framework, with the open source LLM models. The exercises are structured in the form of **CTF (Capture The Flag) challenges**, each with a clear objective, optional hints, and a flag awarded upon successful completion.
-
-## Gettting started
-
-This guide provides instructions for setting up and running the challenges.
+## Quick start (recommended)
 
 ### Prerequisites
+- Python 3.10+
+- `pip`
+- The shared API token from the workshop organizer (`PROMPTME_API_KEY`)
 
-* Python 3.10 or higher
-* pip (Python package installer)
-* ollama framework 
+### 1) Clone
 
-### Setup
+```bash
+git clone https://github.com/LadyR00t/promptme-aws-remote.git
+cd promptme-aws-remote
+```
 
-#### 1. Clone the repository.
-> ```
-> git clone https://github.com/OWASP/www-project-promptme.git
-> ```
+### 2) Install dependencies
 
-#### 2. Go to challenge directory.
-> ```
-> cd PromptMe
-> ```
+```bash
+pip install -r requirements.txt
+```
 
-#### 3. Install the dependencies.
-> ```
-> pip install -r requirements.txt
-> ```
+### 3) Configure remote models + token
 
-#### 4. Download and Run Ollama
+**PowerShell (Windows):**
 
-> Download Ollama depending on your OS from https://ollama.com/download
->```
-> ollama serve (in the separate terminal)
-> ollama pull mistral
-> ollama pull llama3
-> ollama pull sqlcoder
-> ollama pull granite3.1-moe:1b
-> ollama pull granite3-guardian
->```
->or Spawn Ollama via docker using the below command
-> ```
-> docker run -d --name ollama_server -p 11434:11434 ollama/ollama:latest
-> docker exec -it ollama_server ollama pull <model_name>
-> docker exec -it ollama_server ollama run <model_name>
-> ```
+```powershell
+$env:PROMPTME_OLLAMA_BASE_URL="http://136.68.19.154:8080"
+$env:PROMPTME_API_KEY="<TOKEN_DEL_TALLER>"
+$env:PROMPTME_MODEL="mistral"
+$env:PROMPTME_GUARDIAN_MODEL="granite3-guardian"
+$env:PROMPTME_SQL_MODEL="sqlcoder"
+```
 
-#### 5. Access the application
+**Bash (Linux/macOS):**
 
-> ```
-> python main.py
-> ```
-Access the application @ http://127.0.0.1:5000
+```bash
+export PROMPTME_OLLAMA_BASE_URL="http://136.68.19.154:8080"
+export PROMPTME_API_KEY="<TOKEN_DEL_TALLER>"
+export PROMPTME_MODEL="mistral"
+export PROMPTME_GUARDIAN_MODEL="granite3-guardian"
+export PROMPTME_SQL_MODEL="sqlcoder"
+```
 
-#### 6. Start the challenge by clicking *start* button on particular category e.g. LLM01
+Models already available on the shared backend:
+- `mistral`
+- `llama3`
+- `sqlcoder`
+- `granite3.1-moe:1b`
+- `granite3-guardian`
+- `aisecops` (extra custom model)
 
-### Tests
+Without `PROMPTME_API_KEY` the remote API returns `401`.
 
-Run the challenge regression tests with:
+### 4) Run
 
-```shell
+```bash
+python main.py
+```
+
+Open: http://127.0.0.1:5000
+
+Click **Start** on a challenge (e.g. LLM01).
+
+More details: [REMOTE_AWS_MODEL_SETUP.md](REMOTE_AWS_MODEL_SETUP.md)
+
+---
+
+## Optional: run with local Ollama
+
+Only if you prefer local models instead of the shared endpoint.
+
+1. Install Ollama: https://ollama.com/download
+2. Pull models:
+
+```bash
+ollama serve
+ollama pull mistral
+ollama pull llama3
+ollama pull sqlcoder
+ollama pull granite3.1-moe:1b
+ollama pull granite3-guardian
+```
+
+3. Point env to localhost (no API key needed for local default):
+
+```powershell
+$env:PROMPTME_OLLAMA_BASE_URL="http://localhost:11434"
+$env:PROMPTME_MODEL="mistral"
+$env:PROMPTME_GUARDIAN_MODEL="granite3-guardian"
+$env:PROMPTME_SQL_MODEL="sqlcoder"
+Remove-Item Env:PROMPTME_API_KEY -ErrorAction SilentlyContinue
+python main.py
+```
+
+---
+
+## Tests
+
+```bash
 python -m pytest -q
 ```
 
-## Compatibility 
-
-This project currently supports macOS and Linux systems. Windows compatibility is in progress and will be released in an upcoming update.
-
 ## Spoilers
 
-[Solutions](https://github.com/OWASP/www-project-promptme/tree/main/solutions) to the challenges are provided for beginners who may not be familiar with exploiting vulnerabilities from the LLM Top 10. This guide is intended to help users solve the challenges and understand the underlying vulnerable code and components.
-
-## Connect
-
-If you face any challenges in setup, solving or any suggestions, please reach out to [https://discord.gg/CYnjfxNhgU](https://discord.gg/CYnjfxNhgU)
-
+Challenge solutions (upstream OWASP):  
+https://github.com/OWASP/www-project-promptme/tree/main/solutions
 
 ## Disclaimer
 
-PromptMe is an intentionally vulnerable application created for educational purposes. Since the application uses insecure code and packages to demonstrate possible risks, it is strongly recommended to run it in a virtual or sandboxed environment.
-Warning: The vulnerabilities shown in this project are for learning only and should never be implemented in production systems.
+PromptMe is intentionally vulnerable and for education only. Run it in a sandbox/VM when possible. Do not reuse these insecure patterns in production.
 
-🤝 Contributing
+## Contributing
 
-We welcome contributions from the community! Whether you're fixing bugs, improving documentation, or suggesting new challenges, your help is appreciated.
-
-If you're interested in contributing:
-
-    Fork the repository.
-
-    Create a new branch (git checkout -b feature-name).
-
-    Make your changes and commit them.
-
-    Push to your fork and create a Pull Request.
-
-
+Fork, branch, commit, and open a Pull Request.
